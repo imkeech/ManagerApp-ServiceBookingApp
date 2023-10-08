@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+
+    <item
+        android:id="@+id/booked_calls"
+        android:title="Booked"
+        android:icon="@drawable/baseline_miscellaneous_services_24"/>
+
+    <item
+        android:id="@+id/onhold_calls"
+        android:title="On Hold"
+        android:icon="@drawable/baseline_pause_24"/>
+
+    <item
+        android:id="@+id/cancelled_calls"
+        android:title="Cancelled"
+        android:icon="@drawable/baseline_cancel_24"/>
+
+    <item
+        android:id="@+id/completed_calls"
+        android:title="Completed"
+        android:icon="@drawable/baseline_done_all_24"/>
+
+</menu>
