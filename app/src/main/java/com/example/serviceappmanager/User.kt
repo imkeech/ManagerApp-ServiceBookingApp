@@ -1,5 +1,7 @@
 package com.example.serviceappmanager
 
+// sample change
+
 data class User(
     val others: String? = null,
     val problems: String? = null,
