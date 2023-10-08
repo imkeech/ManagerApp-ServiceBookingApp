@@ -1,6 +1,7 @@
 package com.example.serviceappmanager
 
-// sample change
+// sample change -
+// edit pante
 
 data class User(
     val others: String? = null,
