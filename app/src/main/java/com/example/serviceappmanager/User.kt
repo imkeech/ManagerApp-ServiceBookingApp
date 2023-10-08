@@ -1,7 +1,8 @@
 package com.example.serviceappmanager
 
-// sample change -
-// edit pante
+// summa intha mari change panra vechiko
+// inga side la nee ena file change pana nu varu athu elame select pantu
+// description type pantu commit and push nu podu
 
 data class User(
     val others: String? = null,
