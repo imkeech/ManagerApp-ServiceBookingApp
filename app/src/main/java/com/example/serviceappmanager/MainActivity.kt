@@ -1,11 +1,11 @@
 package com.example.serviceappmanager
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.serviceappmanager.databinding.ActivityMainBinding
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-
 
 class MainActivity : AppCompatActivity() {
 
@@ -20,9 +20,6 @@ class MainActivity : AppCompatActivity() {
         // Get the reference to the FloatingActionButton
         fab = binding.floatingActionButton
 
-        // Set the initial fragment when the activity is created
-        //replaceFragment(HomeFragment())
-
         // Make the bottomNavigationView background transparent
         binding.bottomNavigationView.background = null
 
@@ -33,6 +30,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.shorts -> replaceFragment(EnginnerFragment())
                 R.id.subscriptions -> replaceFragment(SubscriptionFragment())
                 R.id.library -> replaceFragment(LibraryFragment())
+                R.id.floatingActionButton -> replaceFragment(addFragment())
             }
             true
         }
@@ -47,11 +45,49 @@ class MainActivity : AppCompatActivity() {
                 .commit()
         }
 
+        // Check if the intent has the fragment name and replace the fragment
+        val fragmentName = intent.getStringExtra(MainActivity3.FRAGMENT_KEY)
+        if (fragmentName != null) {
+            handleFragmentNavigation(getMenuItemIdByFragmentName(fragmentName))
+        }
     }
 
-    private fun replaceFragment(fragment: Fragment) {
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.frame_layout, fragment)
-            .commit()
+    private fun getMenuItemIdByFragmentName(fragmentName: String): Int {
+        // Mapping fragment names to menu item IDs
+        return when (fragmentName) {
+            "HomeFragment" -> R.id.home
+            "EnginnerFragment" -> R.id.shorts
+            "SubscriptionFragment" -> R.id.subscriptions
+            "LibraryFragment" -> R.id.library
+            "addFragment" -> R.id.floatingActionButton
+            else -> -1
+        }
+    }
+
+    private fun handleFragmentNavigation(itemId: Int) {
+        var fragment: Fragment? = null
+
+        when (itemId) {
+            R.id.home -> fragment = HomeFragment()
+            R.id.shorts -> fragment = EnginnerFragment()
+            R.id.subscriptions -> fragment = SubscriptionFragment()
+            R.id.library -> fragment = LibraryFragment()
+            R.id.floatingActionButton -> fragment = addFragment()
+            else -> {
+                // Handle other menu items if needed
+            }
+        }
+        replaceFragment(fragment)
+    }
+
+    private fun replaceFragment(fragment: Fragment?) {
+        if (fragment == null) {
+            Log.d("FragmentNavigation", "Unknown fragment was sent")
+            return
+        }
+        val transaction = supportFragmentManager.beginTransaction()
+        transaction.add(R.id.frame_layout, fragment)
+        transaction.commitNow()
+        Log.d("FragmentNavigation", "Transaction done moved to '${fragment.javaClass.name}', isEmpty: ${transaction.isEmpty}")
     }
 }
