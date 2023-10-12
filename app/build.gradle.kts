@@ -55,8 +55,10 @@ dependencies {
     implementation("com.google.firebase:firebase-database-ktx:20.2.2")
     testImplementation("junit:junit:4.13.2")
     implementation("com.github.kittinunf.fuel:fuel:3.0.0-alpha1")
-
+    implementation("com.github.kittinunf.fuel:fuel:3.0.0-alpha1")
     implementation ("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+
+    implementation ("com.github.PhilJay:MPAndroidChart:v3.0.3")
 }
