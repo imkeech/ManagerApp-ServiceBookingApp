@@ -77,13 +77,13 @@ class MainActivity3 : AppCompatActivity() {
         binding.analytics.setOnClickListener {
             // Navigate to the BookedFragment in MainActivity2
             val intent = Intent(this, MainActivity::class.java)
-            intent.putExtra(FRAGMENT_KEY, "LibraryFragment")
+            intent.putExtra(FRAGMENT_KEY, "SubscriptionFragment")
             startActivity(intent)
         }
         binding.history.setOnClickListener {
             // Navigate to the BookedFragment in MainActivity2
             val intent = Intent(this, MainActivity::class.java)
-            intent.putExtra(FRAGMENT_KEY, "SubscriptionFragment")
+            intent.putExtra(FRAGMENT_KEY, "LibraryFragment")
             startActivity(intent)
         }
     }
