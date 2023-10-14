@@ -86,7 +86,7 @@ class MainActivity : AppCompatActivity() {
             return
         }
         val transaction = supportFragmentManager.beginTransaction()
-        transaction.add(R.id.frame_layout, fragment)
+        transaction.replace(R.id.frame_layout, fragment)
         transaction.commitNow()
         Log.d("FragmentNavigation", "Transaction done moved to '${fragment.javaClass.name}', isEmpty: ${transaction.isEmpty}")
     }

@@ -17,8 +17,12 @@ class CloudMessaging {
     private val httpClient = okhttp3.OkHttpClient()
     private val notifDbRef = Firebase.firestore.collection("notifications")
 
-    fun sendEngineerNotification(engineerId: String) {
-        val data = mapOf("destination" to "engineer", "toEngineerId" to engineerId)
+    fun sendEngineerNotification(engineerId: String, phoneNumber: String) {
+        val data = mapOf(
+            "destination" to "engineer",
+            "toEngineerId" to engineerId,
+            "description" to "You have been alotted a service for customer: $phoneNumber"
+        )
         sendMessage(data)
     }
 

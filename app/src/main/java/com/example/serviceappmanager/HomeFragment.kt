@@ -193,7 +193,7 @@ class HomeFragment : Fragment() {
 
     private fun sendAcceptNotification(phoneNumber: String, message: String, engineerId: String) {
         cloudMessaging.sendCloudMessage(phoneNumber, message)
-        cloudMessaging.sendEngineerNotification(engineerId)
+        cloudMessaging.sendEngineerNotification(engineerId, phoneNumber)
         Log.d("database", "booking added for number $phoneNumber")
     }
 
