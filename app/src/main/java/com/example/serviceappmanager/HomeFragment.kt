@@ -11,6 +11,8 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import java.util.*
 
 class HomeFragment : Fragment() {
@@ -18,93 +20,120 @@ class HomeFragment : Fragment() {
     private lateinit var firestore: FirebaseFirestore
     private lateinit var userCollection: CollectionReference
     private val cloudMessaging = CloudMessaging()
-    private lateinit var navigate:Button
+    private lateinit var navigate: Button
+    private val managerNotifDb = Firebase.firestore.collection("manager-notifications")
+
 
     // Store service engineer names and their IDs
     private val serviceEngineerIdMap = mutableMapOf<String, String>()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         val rootView = inflater.inflate(R.layout.fragment_home, container, false)
 
         linearLayout = rootView.findViewById(R.id.linearLayout)
 
-        navigate = rootView.findViewById(R.id.navigate)
-        navigate.setOnClickListener {
-            val intent = Intent(requireContext(), MainActivity2::class.java)
-            startActivity(intent)
+        managerNotifDb.get().addOnSuccessListener {
+            it.documents.forEach { doc ->
+
+                val cardView = layoutInflater.inflate(
+                    R.layout.notification_card, linearLayout, false
+                )
+                val descreption = cardView.findViewById<TextView>(R.id.notificationDescription)
+                descreption.text = doc.getString("description")
+                linearLayout.addView(cardView)
+
+
+            }
         }
-
-
+        return rootView
+    }
+/*
 
         firestore = FirebaseFirestore.getInstance()
         userCollection = firestore.collection("Service_Booking")
 
-        userCollection.get()
-            .addOnSuccessListener { querySnapshot ->
+        userCollection.get().addOnSuccessListener { querySnapshot ->
                 for (documentSnapshot in querySnapshot) {
                     val user = documentSnapshot.toObject(User::class.java)
                     user?.let {
                         val cardView = layoutInflater.inflate(
-                            R.layout.card_item_layout,
-                            linearLayout,
-                            false
+                            R.layout.card_item_layout, linearLayout, false
                         ) as androidx.cardview.widget.CardView
                         val cardTextView = cardView.findViewById<TextView>(R.id.textViewData)
                         val acceptButton = cardView.findViewById<Button>(R.id.acceptButton)
-                        val spinnerServiceEngineer = cardView.findViewById<Spinner>(R.id.spinnerServiceEngineer)
+                        val spinnerServiceEngineer =
+                            cardView.findViewById<Spinner>(R.id.spinnerServiceEngineer)
 
-                        val cardText =
-                            if (it.problems == "Others") {
-                                " Problems: ${it.others}\n\n Machine modelID: ${it.modelId}\n\n"
-                            } else {
-                                " Problems: ${it.problems}\n\n Machine modelID: ${it.modelId}\n\n"
-                            }
+                        val cardText = if (it.problems == "Others") {
+                            " Problems: ${it.others}\n\n Machine modelID: ${it.modelId}\n\n"
+                        } else {
+                            " Problems: ${it.problems}\n\n Machine modelID: ${it.modelId}\n\n"
+                        }
                         cardTextView.text = cardText
 
                         if (it.isAccepted == true) {
-                            val tickDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.baseline_check_circle_outline_24)
-                            acceptButton.setCompoundDrawablesWithIntrinsicBounds(null, null, tickDrawable, null)
+                            val tickDrawable = ContextCompat.getDrawable(
+                                requireContext(), R.drawable.baseline_check_circle_outline_24
+                            )
+                            acceptButton.setCompoundDrawablesWithIntrinsicBounds(
+                                null, null, tickDrawable, null
+                            )
                             acceptButton.text = "Accepted"
                             acceptButton.isEnabled = false
                         } else {
                             acceptButton.setOnClickListener { view ->
                                 if (it.isAccepted != true) {
                                     it.isAccepted = true // Mark the item as accepted
-                                    val selectedServiceEngineerName = spinnerServiceEngineer.selectedItem as String
-                                    val serviceEngineerId = serviceEngineerIdMap[selectedServiceEngineerName].toString() ?: return@setOnClickListener
+                                    val selectedServiceEngineerName =
+                                        spinnerServiceEngineer.selectedItem as String
+                                    val serviceEngineerId =
+                                        serviceEngineerIdMap[selectedServiceEngineerName].toString()
+                                            ?: return@setOnClickListener
 
                                     val updatedFields = hashMapOf<String, Any>(
                                         "accepted" to true, // Only update the isAccepted field
                                         "assignedServiceEngineerId" to serviceEngineerId
                                     )
-                                    userCollection.document(documentSnapshot.id).update(updatedFields)
+                                    userCollection.document(documentSnapshot.id)
+                                        .update(updatedFields)
 
                                     // Fetch service engineer details based on the assigned ID
-                                    val serviceEngineerCollection = firestore.collection("ServiceEngineer")
+                                    val serviceEngineerCollection =
+                                        firestore.collection("ServiceEngineer")
                                     serviceEngineerCollection.whereEqualTo("id", serviceEngineerId)
-                                        .get()
-                                        .addOnSuccessListener { querySnapshot ->
+                                        .get().addOnSuccessListener { querySnapshot ->
                                             for (documentSnapshot in querySnapshot) {
-                                                val engineerName = documentSnapshot.getString("name")
-                                                val engineerPhoneNumber = documentSnapshot.getString("phoneNumber")
+                                                val engineerName =
+                                                    documentSnapshot.getString("name")
+                                                val engineerPhoneNumber =
+                                                    documentSnapshot.getString("phoneNumber")
 
                                                 // Create a message with service engineer details
-                                                val message = " Booking accepted \n \n $cardText Service Engineer: $engineerName\n \n Phone: $engineerPhoneNumber \n \n"
+                                                val message =
+                                                    " Booking accepted \n \n $cardText Service Engineer: $engineerName\n \n Phone: $engineerPhoneNumber \n \n"
 
                                                 // Send the message
-                                                sendAcceptNotification(it.ph_no ?: "", message, serviceEngineerId)
-                                                Log.d("message","$message")
+                                                sendAcceptNotification(
+                                                    it.ph_no ?: "", message, serviceEngineerId
+                                                )
+                                                Log.d("message", "$message")
                                             }
-                                        }
-                                        .addOnFailureListener { e ->
-                                            Log.e("ServiceEngineer", "Error fetching service engineer details: ${e.message}")
+                                        }.addOnFailureListener { e ->
+                                            Log.e(
+                                                "ServiceEngineer",
+                                                "Error fetching service engineer details: ${e.message}"
+                                            )
                                         }
 
-                                    val tickDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.baseline_check_circle_outline_24)
-                                    acceptButton.setCompoundDrawablesWithIntrinsicBounds(null, null, tickDrawable, null)
+                                    val tickDrawable = ContextCompat.getDrawable(
+                                        requireContext(),
+                                        R.drawable.baseline_check_circle_outline_24
+                                    )
+                                    acceptButton.setCompoundDrawablesWithIntrinsicBounds(
+                                        null, null, tickDrawable, null
+                                    )
                                     acceptButton.text = "Accepted"
                                     acceptButton.isEnabled = false
 
@@ -112,15 +141,15 @@ class HomeFragment : Fragment() {
                                         // ... Generate card text ...
                                     }
 
-                                    Toast.makeText(requireContext(), "Accepted", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(requireContext(), "Accepted", Toast.LENGTH_SHORT)
+                                        .show()
                                 }
                             }
                         }
 
                         // Fetch list of available service engineers
                         val serviceEngineerCollection = firestore.collection("ServiceEngineer")
-                        serviceEngineerCollection.whereEqualTo("availability", "Yes")
-                            .get()
+                        serviceEngineerCollection.whereEqualTo("availability", "Yes").get()
                             .addOnSuccessListener { querySnapshot ->
                                 val serviceEngineerList = ArrayList<String>()
 
@@ -130,25 +159,31 @@ class HomeFragment : Fragment() {
 
                                     serviceEngineerName?.let {
                                         serviceEngineerList.add(it)
-                                        serviceEngineerIdMap[it] = serviceEngineerId.toString() // Store the ID in the map
+                                        serviceEngineerIdMap[it] =
+                                            serviceEngineerId.toString() // Store the ID in the map
                                     }
                                 }
 
                                 // Create an ArrayAdapter for the Spinner
-                                val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, serviceEngineerList)
+                                val adapter = ArrayAdapter(
+                                    requireContext(),
+                                    android.R.layout.simple_spinner_item,
+                                    serviceEngineerList
+                                )
                                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 
                                 // Set the ArrayAdapter on the Spinner
                                 spinnerServiceEngineer.adapter = adapter
-                            }
-                            .addOnFailureListener { e ->
-                                Log.e("ServiceEngineer", "Error fetching service engineers: ${e.message}")
+                            }.addOnFailureListener { e ->
+                                Log.e(
+                                    "ServiceEngineer",
+                                    "Error fetching service engineers: ${e.message}"
+                                )
                             }
 
                         // Fetch customer details and append them to cardTextView
                         val customerDetailsCollection = firestore.collection("customerDetails")
-                        customerDetailsCollection.whereEqualTo("modelId", it.modelId)
-                            .get()
+                        customerDetailsCollection.whereEqualTo("modelId", it.modelId).get()
                             .addOnSuccessListener { querySnapshot ->
                                 val customerDetailsText = StringBuilder()
                                 val uniqueModelIds = HashSet<String>()
@@ -171,25 +206,23 @@ class HomeFragment : Fragment() {
                                 }
 
                                 cardTextView.append(customerDetailsText.toString())
-                            }
-                            .addOnFailureListener { e ->
-                                Log.e("CustomerDetails", "Error fetching customer details: ${e.message}")
+                            }.addOnFailureListener { e ->
+                                Log.e(
+                                    "CustomerDetails",
+                                    "Error fetching customer details: ${e.message}"
+                                )
                             }
 
                         linearLayout.addView(cardView)
                     }
                 }
-            }
-            .addOnFailureListener { e ->
+            }.addOnFailureListener { e ->
                 Toast.makeText(
-                    requireContext(),
-                    "Failed to fetch data: ${e.message}",
-                    Toast.LENGTH_SHORT
+                    requireContext(), "Failed to fetch data: ${e.message}", Toast.LENGTH_SHORT
                 ).show()
             }
 
-        return rootView
-    }
+     */
 
     private fun sendAcceptNotification(phoneNumber: String, message: String, engineerId: String) {
         cloudMessaging.sendCloudMessage(phoneNumber, message)

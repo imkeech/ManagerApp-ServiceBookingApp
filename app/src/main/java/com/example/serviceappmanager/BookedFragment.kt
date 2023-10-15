@@ -11,6 +11,8 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import java.util.*
 
 class BookedFragment : Fragment() {
@@ -20,6 +22,7 @@ class BookedFragment : Fragment() {
     private val cloudMessaging = CloudMessaging()
     private lateinit var navigate:Button
 
+
     // Store service engineer names and their IDs
     private val serviceEngineerIdMap = mutableMapOf<String, String>()
 
@@ -28,6 +31,9 @@ class BookedFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val rootView = inflater.inflate(R.layout.fragment_booked, container, false)
+
+        // Notifications
+
 
         linearLayout = rootView.findViewById(R.id.linearLayoutbooked)
 
@@ -188,7 +194,7 @@ class BookedFragment : Fragment() {
 
     private fun sendAcceptNotification(phoneNumber: String, message: String, engineerId: String) {
         cloudMessaging.sendCloudMessage(phoneNumber, message)
-        cloudMessaging.sendEngineerNotification(engineerId)
+        cloudMessaging.sendEngineerNotification(engineerId, phoneNumber)
         Log.d("database", "booking added for number $phoneNumber")
     }
 

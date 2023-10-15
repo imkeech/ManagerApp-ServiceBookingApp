@@ -19,6 +19,7 @@ import com.google.firebase.messaging.RemoteMessage
 
 class FirebasePushMessageHandler : FirebaseMessagingService() {
     private val CHANNEL_ID = "manager-notification"
+    private val managerNotifDb = Firebase.firestore.collection("manager-notifications")
 
     override fun onNewToken(token: String) {
         Log.d("fcm", "New Token: $token")
@@ -27,24 +28,24 @@ class FirebasePushMessageHandler : FirebaseMessagingService() {
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         Log.d("fcm", "Message received")
-        val sharedPref = getSharedPreferences("login-data", MODE_PRIVATE)
-
         val toApp = remoteMessage.data["toApp"]
         val serviceId = remoteMessage.data["serviceId"]
         val status = remoteMessage.data["status"]
 
+
         if (toApp != "manager")
             return
-        val destinationApp = remoteMessage.data["destination"]
-        if (destinationApp != "engineer")
-            return
-        Log.d("notifications", "Received notification with status: $status")
+        Log.d("fcm", "Received notification with status: $status, toApp: $toApp")
+
         val content = "Status of service with id $serviceId is changed to $status"
         showNotification(content)
     }
 
     private fun showNotification(content: String) {
         createNotificationChannel()
+
+        val data = mapOf("description" to content)
+        managerNotifDb.add(data)
 
         val goToNotifications = Intent(this, MainActivity2::class.java)
         goToNotifications.putExtra("is-notification", "true")
@@ -57,7 +58,7 @@ class FirebasePushMessageHandler : FirebaseMessagingService() {
         )
 
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
-//            .setSmallIcon(R.drawable.logo)
+            .setSmallIcon(R.drawable.logo)
             .setContentTitle("Service status changed")
             .setContentIntent(notifIntent)
             .setContentText(content)
@@ -72,8 +73,10 @@ class FirebasePushMessageHandler : FirebaseMessagingService() {
                     Manifest.permission.POST_NOTIFICATIONS
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
+                Log.d("fcm", "Permission for sending notification denied")
                 return
             } else {
+                Log.d("fcm", "Sending Notification to user")
                 notify(notificationId.toInt(), notification)
             }
         }
@@ -81,8 +84,8 @@ class FirebasePushMessageHandler : FirebaseMessagingService() {
 
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = "Service Requests"
-            val descriptionText = "Alerts the user when a service request is accepted"
+            val name = "Manager App Notifier"
+            val descriptionText = "Alerts the manager when an engineer changes status of a call"
             val importance = NotificationManager.IMPORTANCE_DEFAULT
             val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
                 description = descriptionText
