@@ -109,7 +109,7 @@
                         android:layout_marginTop="20dp"
                         android:textColor="@color/black"
                         android:padding="8dp"
-                        android:hint="Availability of the the person"
+                        android:hint="Availability (YES or NO)"
                         android:drawableLeft="@drawable/baseline_person_24"
                         android:drawablePadding="8dp" />
 
