@@ -31,12 +31,7 @@ class BookedFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val rootView = inflater.inflate(R.layout.fragment_booked, container, false)
-
-        // Notifications
-
-
         linearLayout = rootView.findViewById(R.id.linearLayoutbooked)
-
         firestore = FirebaseFirestore.getInstance()
         userCollection = firestore.collection("Service_Booking")
 
@@ -103,16 +98,13 @@ class BookedFragment : Fragment() {
                                         .addOnFailureListener { e ->
                                             Log.e("ServiceEngineer", "Error fetching service engineer details: ${e.message}")
                                         }
-
                                     val tickDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.baseline_check_circle_outline_24)
                                     acceptButton.setCompoundDrawablesWithIntrinsicBounds(null, null, tickDrawable, null)
                                     acceptButton.text = "Accepted"
                                     acceptButton.isEnabled = false
-
                                     it.ph_no?.let { phoneNumber ->
                                         // ... Generate card text ...
                                     }
-
                                     Toast.makeText(requireContext(), "Accepted", Toast.LENGTH_SHORT).show()
                                 }
                             }

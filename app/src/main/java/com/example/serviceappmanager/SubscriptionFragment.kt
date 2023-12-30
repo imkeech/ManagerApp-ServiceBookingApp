@@ -1,5 +1,6 @@
 package com.example.serviceappmanager
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,7 +13,9 @@ import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
+import java.text.DecimalFormat
 
 class SubscriptionFragment : Fragment() {
 
@@ -56,6 +59,14 @@ class SubscriptionFragment : Fragment() {
         return view
     }
 
+    class WholeNumberValueFormatter : ValueFormatter() {
+        private val format = DecimalFormat("###") // Format to display values as whole numbers
+
+        override fun getFormattedValue(value: Float): String {
+            return format.format(value.toDouble())
+        }
+    }
+
     private fun updateChart(chart: BarChart, modelCounts: Map<String, Int>) {
         val entries = ArrayList<BarEntry>()
         val labels = modelCounts.keys.toList()
@@ -65,10 +76,24 @@ class SubscriptionFragment : Fragment() {
             entries.add(barEntry)
         }
 
-        val dataSet = BarDataSet(entries, "Service Bookings")
-        dataSet.setColors(intArrayOf(R.color.white, R.color.white), context)
+        val dataSet = BarDataSet(entries, "Machine Models")
+        dataSet.setColors(Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW)
+        dataSet.valueTextColor = resources.getColor(R.color.white, null)
+        dataSet.valueTextSize = 14f
+        dataSet.valueFormatter = WholeNumberValueFormatter()
+        dataSet.setColors(intArrayOf(R.color.black), context)
         val dataSets: ArrayList<IBarDataSet> = ArrayList()
         dataSets.add(dataSet)
+
+
+        chart.description.textColor = resources.getColor(R.color.white, null)
+        chart.xAxis.textColor = resources.getColor(R.color.white, null)
+        chart.axisLeft.textColor = resources.getColor(R.color.white, null)
+        chart.axisRight.textColor = resources.getColor(R.color.white, null)
+        chart.legend.textColor = resources.getColor(R.color.white, null)
+
+        // Set x-label size to 15dp
+        //chart.xAxis.textSize = 15f
 
         val data = BarData(dataSets)
         chart.data = data
@@ -79,13 +104,16 @@ class SubscriptionFragment : Fragment() {
         xAxis.valueFormatter = IndexAxisValueFormatter(labels)
         xAxis.position = XAxis.XAxisPosition.BOTTOM
         xAxis.setDrawGridLines(false)
-        xAxis.labelRotationAngle = 45f
+        xAxis.labelRotationAngle = 90f
         xAxis.granularity = 1f
+
 
         val yAxisLeft = chart.axisLeft
         val yAxisRight = chart.axisRight
         yAxisLeft.axisMinimum = 0f
         yAxisRight.axisMinimum = 0f
+        yAxisLeft.granularity = 1f // Set the granularity to display only whole numbers
+        yAxisRight.granularity = 1f // Set the granularity to display only whole numbers
 
         chart.invalidate()
     }

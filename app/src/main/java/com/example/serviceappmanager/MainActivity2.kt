@@ -23,8 +23,8 @@ class MainActivity2 : AppCompatActivity() {
             when (menuItem.itemId) {
                 R.id.booked_calls,
                 R.id.onhold_calls,
-                R.id.completed_calls,
-                R.id.cancelled_calls -> {
+                R.id.cancelled_calls,
+                R.id.completed_calls -> {
                     handleFragmentNavigation(menuItem.itemId)
                     true
                 }
@@ -51,8 +51,8 @@ class MainActivity2 : AppCompatActivity() {
         return when (fragmentName) {
             "BookedFragment" -> R.id.booked_calls
             "OnHoldFragment" -> R.id.onhold_calls
-            "CompletedFragment" -> R.id.completed_calls
             "CancelledFragment" -> R.id.cancelled_calls
+            "CompletedFragment" -> R.id.completed_calls
             else -> -1
         }
     }
@@ -83,8 +83,9 @@ class MainActivity2 : AppCompatActivity() {
             return
         }
         val transaction = supportFragmentManager.beginTransaction()
-        transaction.add(R.id.frame_layout2, fragment)
+        transaction.replace(R.id.frame_layout2, fragment) // Use replace instead of add
         transaction.commitNow()
-        Log.d("FragmentNavigation","Transaction done moved to '${fragment.javaClass.name}', isEmpty: ${transaction.isEmpty}")
+        Log.d("FragmentNavigation", "Transaction done moved to '${fragment.javaClass.name}', isEmpty: ${transaction.isEmpty}")
     }
+
 }

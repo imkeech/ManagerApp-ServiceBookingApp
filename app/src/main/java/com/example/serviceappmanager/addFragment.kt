@@ -11,10 +11,12 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Spinner
 import android.widget.Toast
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
@@ -31,7 +33,6 @@ class addFragment : Fragment() {
     private lateinit var city: EditText
     private lateinit var address: EditText
     private lateinit var pincode: EditText
-    private lateinit var model: EditText
     private lateinit var modelId: EditText
     private lateinit var installationDate: EditText
     private lateinit var price: EditText
@@ -44,12 +45,21 @@ class addFragment : Fragment() {
     private val amdOptions = arrayOf("Yes", "No")
     private var dataRetrieved = false
 
+    private lateinit var modelSpinner: Spinner
+    private val modelOptions = arrayOf("-----------------Select------------------","Ricoh DD 3344","Ricoh DX 2330","Ricoh DX 2430", "Ricoh MC 2000",
+                                        "Ricoh IMC 20","Ricoh MPC 2011 SP","Ricoh MPC 2004 SP","Ricoh MPC 2003 SP", "Ricoh IM 2500",
+                                        "Ricoh 3054 SP","Ricoh 3555 SP", "Ricoh 2555 SP","Ricoh IM 2702", "Ricoh IM 2701",
+                                        "Ricoh IM 2700","Ricoh 2014 AD", "Ricoh 2014D","Ricoh 2014", "Ricoh 2501 SP",
+                                        "Ricoh 2001 SP","Ricoh 2501L", "Ricoh 2001L","Ricoh 1600 Le", "Ricoh 1600 L2",
+                                        "Ricoh 1800 L2","Ricoh 2000 Le", "Ricoh 2000 L2")
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_add, container, false)
+
+       activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
 
         name = view.findViewById(R.id.name)
         email = view.findViewById(R.id.email)
@@ -58,7 +68,7 @@ class addFragment : Fragment() {
         city = view.findViewById(R.id.city)
         address = view.findViewById(R.id.address)
         pincode = view.findViewById(R.id.pincode)
-        model = view.findViewById(R.id.model)
+        modelSpinner = view.findViewById(R.id.model_spinner)
         modelId = view.findViewById(R.id.modelid)
         installationDate = view.findViewById(R.id.installationDate)
         price = view.findViewById(R.id.price)
@@ -72,6 +82,9 @@ class addFragment : Fragment() {
         // Set up ArrayAdapter for AutoCompleteTextView
         val amdAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, amdOptions)
         amd.setAdapter(amdAdapter)
+
+        val modelAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, modelOptions)
+        modelSpinner.adapter = modelAdapter
 
         installationDate.setOnClickListener {
             showDatePickerDialog()
@@ -138,10 +151,10 @@ class addFragment : Fragment() {
         val city = city.text.toString()
         val address = address.text.toString()
         val pincode = pincode.text.toString()
-        val model = model.text.toString()
         val modelid = modelId.text.toString()
         val AMDPeriod = price.text.toString()
         val no_of_coppies = amd.text.toString()
+        val selectedModel = modelOptions[modelSpinner.selectedItemPosition]
 
                 if (name.isEmpty())
                 {
@@ -178,7 +191,7 @@ class addFragment : Fragment() {
                     Toast.makeText(requireContext(), "Please enter Pincode", Toast.LENGTH_SHORT).show()
                     return
                 }
-                if (model.isEmpty())
+                if (selectedModel.isEmpty())
                 {
                     Toast.makeText(requireContext(), "Please enter Machine Model", Toast.LENGTH_SHORT).show()
                     return
@@ -194,13 +207,13 @@ class addFragment : Fragment() {
                     return
                 }
 
-                // Validate AMD value
+
                 if (no_of_coppies.isEmpty()) {
                     Toast.makeText(requireContext(), "Please enter no_of_coppies", Toast.LENGTH_SHORT).show()
                     return
                 }
 
-                val student = Students(name, email, ph_no, state, city, address, pincode, model, modelid, selectedinstallationDate, AMDPeriod, no_of_coppies)
+                val student = Students(name, email, ph_no, state, city, address, pincode, selectedModel, modelid, selectedinstallationDate, AMDPeriod, no_of_coppies)
 
         // Generate a random document name
         val randomDocumentName = generateRandomDocumentName()
@@ -278,7 +291,7 @@ class addFragment : Fragment() {
         city.isEnabled = editable
         address.isEnabled = editable
         pincode.isEnabled = editable
-        model.isEnabled = editable
+        modelSpinner.isEnabled = editable
         modelId.isEnabled = editable
         installationDate.isEnabled = editable
         price.isEnabled = editable

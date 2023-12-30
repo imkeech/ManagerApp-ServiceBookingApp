@@ -1,5 +1,6 @@
 package com.example.serviceappmanager
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
@@ -27,7 +28,11 @@ class MainActivity : AppCompatActivity() {
         // Set the item selection listener for bottomNavigationView
         binding.bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.home -> replaceFragment(HomeFragment())
+                R.id.home -> {
+                    val intent = Intent(this@MainActivity, MainActivity3::class.java)
+                    startActivity(intent)
+                    true // Return true to indicate the item selection is handled
+                }
                 R.id.shorts -> replaceFragment(EnginnerFragment())
                 R.id.subscriptions -> replaceFragment(SubscriptionFragment())
                 R.id.library -> replaceFragment(LibraryFragment())
@@ -56,7 +61,7 @@ class MainActivity : AppCompatActivity() {
     private fun getMenuItemIdByFragmentName(fragmentName: String): Int {
         // Mapping fragment names to menu item IDs
         return when (fragmentName) {
-            "HomeFragment" -> R.id.home
+            "MainActivity" -> R.id.home
             "EnginnerFragment" -> R.id.shorts
             "SubscriptionFragment" -> R.id.subscriptions
             "LibraryFragment" -> R.id.library

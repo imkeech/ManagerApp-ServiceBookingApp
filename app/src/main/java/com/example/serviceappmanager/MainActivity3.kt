@@ -29,24 +29,6 @@ class MainActivity3 : AppCompatActivity() {
         binding = ActivityMain3Binding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val analysisUrl = "https://sentanalysis-c0ht.onrender.com/analyze_reviews"
-
-        val reviewText = findViewById<TextView>(R.id.sent_result)
-
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val string = Fuel.get(analysisUrl).body
-                val response = JSONObject(string)
-                val positives = response.getInt("positive_reviews")
-                val negatives = response.getInt("negative_reviews")
-                val message = "Positive reviews: $positives Negative reviews: $negatives"
-                Log.d("analysis", message)
-                reviewText.text = message
-            } catch(e: Exception) {
-                Log.d("analysis", "The URL is not responding")
-            }
-        }
-
         binding.bookedcalls.setOnClickListener {
             // Navigate to the BookedFragment in MainActivity2
             val intent = Intent(this, MainActivity2::class.java)
@@ -93,10 +75,9 @@ class MainActivity3 : AppCompatActivity() {
             startActivity(intent)
         }
         binding.history.setOnClickListener {
-            // Navigate to the BookedFragment in MainActivity2
-            val intent = Intent(this, MainActivity::class.java)
+            /*val intent = Intent(this, MainActivity::class.java)
             intent.putExtra(FRAGMENT_KEY, "LibraryFragment")
-            startActivity(intent)
+            startActivity(intent)*/
         }
     }
 

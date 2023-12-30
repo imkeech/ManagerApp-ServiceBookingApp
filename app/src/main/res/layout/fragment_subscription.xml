@@ -1,21 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/lavender"
     tools:context=".SubscriptionFragment">
 
     <!-- TODO: Update blank fragment layout -->
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Analytics Tab"
+        android:layout_height="wrap_content"
+        android:text="Analytics"
+        android:textSize="25dp"
+        android:id="@+id/heading"
+        android:textAllCaps="true"
+        android:textColor="@color/white"
         android:gravity="center|top"
         />
 
     <com.github.mikephil.charting.charts.BarChart
         android:id="@+id/barChart"
+        android:layout_below="@+id/heading"
         android:layout_width="match_parent"
-        android:layout_height="350dp" />
+        android:layout_height="600dp"
+        android:padding="10dp"/>
 
-</FrameLayout>
+</RelativeLayout>

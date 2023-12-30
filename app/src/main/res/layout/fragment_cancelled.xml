@@ -41,11 +41,10 @@
 
                     </LinearLayout>
 
-
-
-
                 </ScrollView>
 
             </androidx.cardview.widget.CardView>
+
         </LinearLayout>
+
 </FrameLayout>
